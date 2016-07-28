@@ -24,67 +24,14 @@ namespace ORMBenchmarksTest
 			{
 				ShowMenu();
 
-				input = Console.ReadLine().First();
+				input = Console.ReadLine().ToUpper().First();
 				switch (input)
 				{
 					case 'Q':
 						break;
 
 					case 'T':
-						List<TestResult> testResults = new List<TestResult>();
-
-						Console.WriteLine("# of Test Runs:");
-						NumRuns = int.Parse(Console.ReadLine());
-
-						//Gather Details for Test
-						Console.WriteLine("# of Sports per Run: ");
-						NumSports = int.Parse(Console.ReadLine());
-
-						Console.WriteLine("# of Teams per Sport: ");
-						NumTeams = int.Parse(Console.ReadLine());
-
-						Console.WriteLine("# of Players per Team: ");
-						NumPlayers = int.Parse(Console.ReadLine());
-
-						Console.WriteLine($"Generating {NumSports} Sports");
-						List<SportDTO> sports = TestData.Generator.GenerateSports(NumSports);
-						List<TeamDTO> teams = new List<TeamDTO>();
-						List<PlayerDTO> players = new List<PlayerDTO>();
-						foreach (var sport in sports)
-						{
-							Console.WriteLine($"Generating {NumTeams} Teams for Sport.Id {sport.Id}");
-
-							var newTeams = TestData.Generator.GenerateTeams(sport.Id, NumTeams);
-							teams.AddRange(newTeams);
-							foreach (var team in newTeams)
-							{
-								Console.WriteLine($"Generating {NumPlayers} Players for Team.Id {team.Id}");
-								var newPlayers = TestData.Generator.GeneratePlayers(team.Id, NumPlayers);
-								players.AddRange(newPlayers);
-							}
-						}
-
-						Console.WriteLine($"Resetting existing db records to start clean");
-						Database.Reset();
-						Database.Load(sports, teams, players);
-
-						Console.WriteLine("Starting tests");
-						for (int i = 0; i < NumRuns; i++)
-						{
-							EntityFramework efTest = new EntityFramework();
-							testResults.AddRange(RunTests(i, Framework.EntityFramework, efTest));
-
-							ADONET adoTest = new ADONET();
-							testResults.AddRange(RunTests(i, Framework.ADONET, adoTest));
-
-							ADONetReader adoReaderTest = new ADONetReader();
-							testResults.AddRange(RunTests(i, Framework.ADONetDr, adoReaderTest));
-
-							DataAccess.Dapper dapperTest = new DataAccess.Dapper();
-							testResults.AddRange(RunTests(i, Framework.Dapper, dapperTest));
-						}
-						ProcessResults(testResults);
-
+						PrepareAndRunTests();
 						break;
 				}
 
@@ -92,7 +39,63 @@ namespace ORMBenchmarksTest
 			while (input != 'Q');
 		}
 
+		private static void PrepareAndRunTests()
+		{
+			Console.WriteLine($"Resetting existing db records to start clean");
+			Database.Reset();
 
+			List<TestResult> testResults = new List<TestResult>();
+
+			Console.WriteLine("# of Test Runs:");
+			NumRuns = int.Parse(Console.ReadLine());
+
+			//Gather Details for Test
+			Console.WriteLine("# of Sports per Run: ");
+			NumSports = int.Parse(Console.ReadLine());
+
+			Console.WriteLine("# of Teams per Sport: ");
+			NumTeams = int.Parse(Console.ReadLine());
+
+			Console.WriteLine("# of Players per Team: ");
+			NumPlayers = int.Parse(Console.ReadLine());
+
+			Console.WriteLine($"Generating {NumSports} Sports");
+			List<SportDTO> sports = TestData.Generator.GenerateSports(NumSports);
+			List<TeamDTO> teams = new List<TeamDTO>();
+			List<PlayerDTO> players = new List<PlayerDTO>();
+			foreach (var sport in sports)
+			{
+				Console.WriteLine($"Generating {NumTeams} Teams for Sport.Id {sport.Id}");
+
+				var newTeams = TestData.Generator.GenerateTeams(sport.Id, NumTeams);
+				teams.AddRange(newTeams);
+				foreach (var team in newTeams)
+				{
+					Console.WriteLine($"Generating {NumPlayers} Players for Team.Id {team.Id}");
+					var newPlayers = TestData.Generator.GeneratePlayers(team.Id, NumPlayers);
+					players.AddRange(newPlayers);
+				}
+			}
+
+			Database.Load(sports, teams, players);
+
+			Console.WriteLine("Starting tests");
+			for (int i = 0; i < NumRuns; i++)
+			{
+				EntityFramework efTest = new EntityFramework();
+				testResults.AddRange(RunTests(i, Framework.EntityFramework, efTest));
+
+				ADONET adoTest = new ADONET();
+				testResults.AddRange(RunTests(i, Framework.ADONET, adoTest));
+
+				ADONetReader adoReaderTest = new ADONetReader();
+				testResults.AddRange(RunTests(i, Framework.ADONetDr, adoReaderTest));
+
+				DataAccess.Dapper dapperTest = new DataAccess.Dapper();
+				testResults.AddRange(RunTests(i, Framework.Dapper, dapperTest));
+			}
+			ProcessResults(testResults);
+		}
 		public static List<TestResult> RunTests(int runID, Framework framework, ITestSignature testSignature)
 		{
 			List<TestResult> results = new List<TestResult>();

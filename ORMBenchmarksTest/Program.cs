@@ -80,21 +80,63 @@ namespace ORMBenchmarksTest
 			Database.Load(sports, teams, players);
 
 			Console.WriteLine("Starting tests");
+
+			List<ITestSignature> testsORMs = new List<ITestSignature>()
+			{
+				new EntityFramework(),
+				new ADONET(),
+				new ADONetReader(),
+				new DataAccess.Dapper()
+			};
+
 			for (int i = 0; i < NumRuns; i++)
 			{
-				EntityFramework efTest = new EntityFramework();
-				testResults.AddRange(RunTests(i, Framework.EntityFramework, efTest));
+				foreach(var tester in testsORMs)
+				{
+					var testResult =RunTests(i, tester.FrameWorkType, tester);
+					testResults.AddRange(testResult);
+				}
+				//EntityFramework efTest = new EntityFramework();
+				//testResults.AddRange(RunTests(i, Framework.EntityFramework, efTest));
 
-				ADONET adoTest = new ADONET();
-				testResults.AddRange(RunTests(i, Framework.ADONET, adoTest));
+				//ADONET adoTest = new ADONET();
+				//testResults.AddRange(RunTests(i, Framework.ADONET, adoTest));
 
-				ADONetReader adoReaderTest = new ADONetReader();
-				testResults.AddRange(RunTests(i, Framework.ADONetDr, adoReaderTest));
+				//ADONetReader adoReaderTest = new ADONetReader();
+				//testResults.AddRange(RunTests(i, Framework.ADONetDr, adoReaderTest));
 
-				DataAccess.Dapper dapperTest = new DataAccess.Dapper();
-				testResults.AddRange(RunTests(i, Framework.Dapper, dapperTest));
+				//DataAccess.Dapper dapperTest = new DataAccess.Dapper();
+				//testResults.AddRange(RunTests(i, Framework.Dapper, dapperTest));
 			}
 			ProcessResults(testResults);
+		}
+
+		/// <summary>
+		/// Fisher_Yates_CardDeck_Shuffle
+		/// </summary>
+		/// <param name="aList">a list.</param>
+		/// <returns></returns>
+		/// With the Fisher-Yates shuffle, first implemented on computers by Durstenfeld in 1964,
+		/// we randomly sort elements. This is an accurate, effective shuffling method for all array types.
+		public static List<ITestSignature> Fisher_Yates_CardDeck_Shuffle(List<ITestSignature> aList)
+		{
+
+			System.Random _random = new System.Random();
+
+			ITestSignature myGO;
+
+			int n = aList.Count;
+			for (int i = 0; i < n; i++)
+			{
+				// NextDouble returns a random number between 0 and 1.
+				// ... It is equivalent to Math.random() in Java.
+				int r = i + (int)(_random.NextDouble() * (n - i));
+				myGO = aList[r];
+				aList[r] = aList[i];
+				aList[i] = myGO;
+			}
+
+			return aList;
 		}
 		public static List<TestResult> RunTests(int runID, Framework framework, ITestSignature testSignature)
 		{

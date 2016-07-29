@@ -13,7 +13,8 @@ namespace ORMBenchmarksTest
 {
 	class Program
 	{
-		public static int CountOfPlayersTopX = 500;
+		public static int CountOfPlayersTopX = 1000;
+		public static int TimeRoundPrecision = 5;
 		public static int NumPlayers { get; set; }
 		public static int NumTeams { get; set; }
 		public static int NumSports { get; set; }
@@ -150,7 +151,7 @@ namespace ORMBenchmarksTest
 				var time = watch.ElapsedMilliseconds;
 				playerByIDResults.Add(time);
 			}
-			result.PlayerByIDMilliseconds = Math.Round(playerByIDResults.Average(), 2);
+			result.PlayerByIDMilliseconds = Math.Round(playerByIDResults.Average(), TimeRoundPrecision);
 
 			List<long> playersForTeamResults = new List<long>();
 			for (int i = 1; i <= NumTeams; i++)
@@ -162,7 +163,7 @@ namespace ORMBenchmarksTest
 				var time = watch.ElapsedMilliseconds;
 				playersForTeamResults.Add(time);
 			}
-			result.PlayersForTeamMilliseconds = Math.Round(playersForTeamResults.Average(), 2);
+			result.PlayersForTeamMilliseconds = Math.Round(playersForTeamResults.Average(), TimeRoundPrecision);
 
 			List<long> teamsForSportResults = new List<long>();
 			for (int i = 1; i <= NumSports; i++)
@@ -174,8 +175,7 @@ namespace ORMBenchmarksTest
 				var time = watch.ElapsedMilliseconds;
 				teamsForSportResults.Add(time);
 			}
-			result.TeamsForSportMilliseconds = Math.Round(teamsForSportResults.Average(), 2);
-			results.Add(result);
+			result.TeamsForSportMilliseconds = Math.Round(teamsForSportResults.Average(), TimeRoundPrecision);
 
 			List<long> playersSelectTopXResults = new List<long>();
 			{
@@ -186,8 +186,8 @@ namespace ORMBenchmarksTest
 				var time = watch.ElapsedMilliseconds;
 				playersSelectTopXResults.Add(time);
 			}
+			result.PlayersSelectTopXMilliseconds = Math.Round(playersSelectTopXResults.Average(), TimeRoundPrecision);
 
-			result.PlayersSelectTopXMilliseconds = Math.Round(playersSelectTopXResults.Average(), 2);
 			results.Add(result);
 
 			return results;
@@ -206,11 +206,10 @@ namespace ORMBenchmarksTest
 					Console.WriteLine($"{orderResult.Run}\t\t{orderResult.PlayerByIDMilliseconds}\t\t\t{orderResult.PlayersForTeamMilliseconds}\t\t\t{orderResult.TeamsForSportMilliseconds}\t\t\t{orderResult.PlayersSelectTopXMilliseconds}");
 				}
 
-				int precision = 5;
-				var avgPlayerById = Math.Round(orderedResults.Average(x => x.PlayerByIDMilliseconds), precision);
-				var avgPlayersForTeam = Math.Round(orderedResults.Average(x => x.PlayersForTeamMilliseconds), precision);
-				var avgPlayersSelectTopX = Math.Round(orderedResults.Average(x => x.PlayersSelectTopXMilliseconds), precision);
-				var avgPlayersForSport = Math.Round(orderedResults.Average(x => x.TeamsForSportMilliseconds), precision);
+				var avgPlayerById = Math.Round(orderedResults.Average(x => x.PlayerByIDMilliseconds), TimeRoundPrecision);
+				var avgPlayersForTeam = Math.Round(orderedResults.Average(x => x.PlayersForTeamMilliseconds), TimeRoundPrecision);
+				var avgPlayersSelectTopX = Math.Round(orderedResults.Average(x => x.PlayersSelectTopXMilliseconds), TimeRoundPrecision);
+				var avgPlayersForSport = Math.Round(orderedResults.Average(x => x.TeamsForSportMilliseconds), TimeRoundPrecision);
 
 				Console.WriteLine($"Average\t\t{avgPlayerById}\t\t\t{avgPlayersForTeam}\t\t\t{avgPlayersForSport}\t\t\t{avgPlayersSelectTopX}");
 			}

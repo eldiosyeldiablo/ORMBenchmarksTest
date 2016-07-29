@@ -20,6 +20,15 @@ namespace ORMBenchmarksTest.DataAccess
 				.Create();
 			return db;
 		}
+
+		public bool GetPlayers(int count)
+		{
+			var db = GetConnection();
+			var player = db.Fetch<PlayerDTO>($"SELECT TOP {count} Id, FirstName, LastName, DateOfBirth, TeamId FROM Player");
+
+			return true;
+		}
+
 		public bool GetPlayerByID(int id)
 		{
 			var db = GetConnection();

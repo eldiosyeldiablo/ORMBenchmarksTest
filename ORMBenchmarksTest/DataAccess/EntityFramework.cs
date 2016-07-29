@@ -23,6 +23,16 @@ namespace ORMBenchmarksTest.DataAccess
 			return true;
 		}
 
+		public bool GetPlayers(int count)
+		{
+			using (SportContext context = new SportContext())
+			{
+				var players = context.Players.AsNoTracking().Take(count).ToList();
+			}
+
+			return true;
+		}
+
 		public bool GetPlayersForTeam(int teamId)
 		{
 			using (SportContext context = new SportContext())

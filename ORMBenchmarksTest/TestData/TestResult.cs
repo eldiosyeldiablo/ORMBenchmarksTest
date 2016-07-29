@@ -9,6 +9,7 @@ namespace ORMBenchmarksTest.TestData
 	public class TestResult
 	{
 		public double PlayerByIDMilliseconds { get; set; }
+		public double PlayersSelectTopXMilliseconds { get; set; }
 		public double PlayersForTeamMilliseconds { get; set; }
 		public double TeamsForSportMilliseconds { get; set; }
 		public Framework Framework { get; set; }

@@ -12,6 +12,7 @@ namespace ORMBenchmarksTest.DataAccess
 		Framework FrameWorkType { get; }
 
 		bool GetPlayerByID(int id);
+		bool GetPlayers(int count);
 		bool GetPlayersForTeam(int teamID);
 		bool GetTeamsForSport(int sportID);
 	}

@@ -23,6 +23,17 @@ namespace ORMBenchmarksTest.DataAccess
 			return true;
 		}
 
+		public bool GetPlayers(int count)
+		{
+			using (SqlConnection conn = new SqlConnection(Constants.ConnectionString))
+			{
+				conn.Open();
+				var player = conn.Query<PlayerDTO>($"SELECT TOP {count} Id, FirstName, LastName, DateOfBirth, TeamId FROM Player");
+			}
+
+			return true;
+		}
+
 		public bool GetPlayersForTeam(int teamId)
 		{
 			using (SqlConnection conn = new SqlConnection(Constants.ConnectionString))

@@ -28,6 +28,22 @@ namespace ORMBenchmarksTest.DataAccess
 			return true;
 		}
 
+		public bool GetPlayers(int count)
+		{
+			using (SqlConnection conn = new SqlConnection(Constants.ConnectionString))
+			{
+				conn.Open();
+				using (SqlCommand command = new SqlCommand($"SELECT TOP {count} Id, FirstName, LastName, DateOfBirth, TeamId FROM Player", conn))
+				{
+					var reader = command.ExecuteReader();
+					var item = AutoMapper.Mapper.DynamicMap<List<PlayerDTO>>(reader)
+						.First();
+				}
+			}
+
+			return true;
+		}
+
 		public bool GetPlayersForTeam(int teamId)
 		{
 			using (SqlConnection conn = new SqlConnection(Constants.ConnectionString))

@@ -13,10 +13,8 @@ namespace ORMBenchmarksTest.DataAccess
 	public class ADONET : ITestSignature
 	{
 		public Framework FrameWorkType { get; } = Framework.ADONET;
-		public long GetPlayerByID(int id)
+		public bool GetPlayerByID(int id)
 		{
-			Stopwatch watch = new Stopwatch();
-			watch.Start();
 			using(SqlConnection conn = new SqlConnection(Constants.ConnectionString))
 			{
 				conn.Open();
@@ -27,14 +25,12 @@ namespace ORMBenchmarksTest.DataAccess
 					adapter.Fill(table);
 				}
 			}
-			watch.Stop();
-			return watch.ElapsedMilliseconds;
+
+			return true;
 		}
 
-		public long GetPlayersForTeam(int teamId)
+		public bool GetPlayersForTeam(int teamId)
 		{
-			Stopwatch watch = new Stopwatch();
-			watch.Start();
 			using (SqlConnection conn = new SqlConnection(Constants.ConnectionString))
 			{
 				conn.Open();
@@ -45,14 +41,12 @@ namespace ORMBenchmarksTest.DataAccess
 					adapter.Fill(table);
 				}
 			}
-			watch.Stop();
-			return watch.ElapsedMilliseconds;
+
+			return true;
 		}
 
-		public long GetTeamsForSport(int sportId)
+		public bool GetTeamsForSport(int sportId)
 		{
-			Stopwatch watch = new Stopwatch();
-			watch.Start();
 			using (SqlConnection conn = new SqlConnection(Constants.ConnectionString))
 			{
 				conn.Open();
@@ -64,8 +58,8 @@ namespace ORMBenchmarksTest.DataAccess
 					adapter.Fill(table);
 				}
 			}
-			watch.Stop();
-			return watch.ElapsedMilliseconds;
+
+			return true;
 		}
 	}
 }

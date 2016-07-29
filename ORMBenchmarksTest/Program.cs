@@ -4,6 +4,7 @@ using ORMBenchmarksTest.DTOs;
 using ORMBenchmarksTest.TestData;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -89,24 +90,16 @@ namespace ORMBenchmarksTest
 				new DataAccess.Dapper()
 			};
 
+			Console.WriteLine("Shufflining the order of ORMs to run");
+			Fisher_Yates_CardDeck_Shuffle(testsORMs);
 			for (int i = 0; i < NumRuns; i++)
 			{
 				foreach(var tester in testsORMs)
 				{
+					Console.WriteLine($"Testing {tester.FrameWorkType}");
 					var testResult =RunTests(i, tester.FrameWorkType, tester);
 					testResults.AddRange(testResult);
 				}
-				//EntityFramework efTest = new EntityFramework();
-				//testResults.AddRange(RunTests(i, Framework.EntityFramework, efTest));
-
-				//ADONET adoTest = new ADONET();
-				//testResults.AddRange(RunTests(i, Framework.ADONET, adoTest));
-
-				//ADONetReader adoReaderTest = new ADONetReader();
-				//testResults.AddRange(RunTests(i, Framework.ADONetDr, adoReaderTest));
-
-				//DataAccess.Dapper dapperTest = new DataAccess.Dapper();
-				//testResults.AddRange(RunTests(i, Framework.Dapper, dapperTest));
 			}
 			ProcessResults(testResults);
 		}
@@ -140,26 +133,42 @@ namespace ORMBenchmarksTest
 		}
 		public static List<TestResult> RunTests(int runID, Framework framework, ITestSignature testSignature)
 		{
+			Stopwatch watch = new Stopwatch();
 			List<TestResult> results = new List<TestResult>();
 
 			TestResult result = new TestResult() { Run = runID, Framework = framework };
 			List<long> playerByIDResults = new List<long>();
 			for (int i = 1; i <= NumPlayers; i++)
 			{
-				playerByIDResults.Add(testSignature.GetPlayerByID(i));
+				watch.Reset();
+				watch.Start();
+				var getPlayers = testSignature.GetPlayerByID(i);
+				watch.Stop();
+				var time = watch.ElapsedMilliseconds;
+				playerByIDResults.Add(time);
 			}
 			result.PlayerByIDMilliseconds = Math.Round(playerByIDResults.Average(), 2);
 
 			List<long> playersForTeamResults = new List<long>();
 			for (int i = 1; i <= NumTeams; i++)
 			{
-				playersForTeamResults.Add(testSignature.GetPlayersForTeam(i));
+				watch.Reset();
+				watch.Start();
+				var getPlayers = testSignature.GetPlayersForTeam(i);
+				watch.Stop();
+				var time = watch.ElapsedMilliseconds;
+				playersForTeamResults.Add(time);
 			}
 			result.PlayersForTeamMilliseconds = Math.Round(playersForTeamResults.Average(), 2);
 			List<long> teamsForSportResults = new List<long>();
 			for (int i = 1; i <= NumSports; i++)
 			{
-				teamsForSportResults.Add(testSignature.GetTeamsForSport(i));
+				watch.Reset();
+				watch.Start();
+				var getPlayers = testSignature.GetTeamsForSport(i);
+				watch.Stop();
+				var time = watch.ElapsedMilliseconds;
+				teamsForSportResults.Add(time);
 			}
 			result.TeamsForSportMilliseconds = Math.Round(teamsForSportResults.Average(), 2);
 			results.Add(result);
@@ -169,17 +178,23 @@ namespace ORMBenchmarksTest
 
 		public static void ProcessResults(List<TestResult> results)
 		{
-			var groupedResults = results.GroupBy(x => x.Framework);
+			var groupedResults = results.GroupBy(x => x.Framework).OrderBy(x=>x.Key);
 			foreach(var group in groupedResults)
 			{
-				Console.WriteLine(group.Key.ToString() + " Results");
+				Console.WriteLine($"\n{group.Key} Results");
 				Console.WriteLine("Run #\tPlayer by ID\t\tPlayers per Team\t\tTeams per Sport");
 				var orderedResults = group.OrderBy(x=>x.Run);
 				foreach(var orderResult in orderedResults)
 				{
-					Console.WriteLine(orderResult.Run.ToString() + "\t\t" + orderResult.PlayerByIDMilliseconds + "\t\t\t" + orderResult.PlayersForTeamMilliseconds + "\t\t\t" + orderResult.TeamsForSportMilliseconds);
+					Console.WriteLine(orderResult.Run + "\t\t" + orderResult.PlayerByIDMilliseconds + "\t\t\t" + orderResult.PlayersForTeamMilliseconds + "\t\t\t" + orderResult.TeamsForSportMilliseconds);
 				}
-				Console.WriteLine($"Average\t\t{orderedResults.Average(x => x.PlayerByIDMilliseconds)}\t\t\t{orderedResults.Average(x => x.PlayersForTeamMilliseconds)}\t\t\t{orderedResults.Average(x => x.TeamsForSportMilliseconds)}");
+
+				int precision = 5;
+				var avgPlayerById = Math.Round(orderedResults.Average(x => x.PlayerByIDMilliseconds), precision);
+				var avgPlayeysForTeam = Math.Round(orderedResults.Average(x => x.PlayersForTeamMilliseconds), precision);
+				var avgPlayersForSport = Math.Round(orderedResults.Average(x => x.TeamsForSportMilliseconds), precision);
+
+				Console.WriteLine($"Average\t\t{avgPlayerById}\t\t\t{avgPlayeysForTeam}\t\t\t{avgPlayersForSport}");
 			}
 		}
 

@@ -28,7 +28,8 @@ namespace ORMBenchmarksTest.DataAccess
 			using (SqlConnection conn = new SqlConnection(Constants.ConnectionString))
 			{
 				conn.Open();
-				var players = conn.Query<List<PlayerDTO>>("SELECT Id, FirstName, LastName, DateOfBirth, TeamId FROM Player WHERE TeamId = @ID", new { ID = teamId });
+				var players = conn.Query<List<PlayerDTO>>("SELECT Id, FirstName, LastName, DateOfBirth, TeamId FROM Player WHERE TeamId = @ID", new { ID = teamId })
+					.AsList();
 			}
 
 			return true;
@@ -40,7 +41,8 @@ namespace ORMBenchmarksTest.DataAccess
 			{
 				conn.Open();
 				var players = conn.Query<PlayerDTO, TeamDTO, PlayerDTO>("SELECT p.Id, p.FirstName, p.LastName, p.DateOfBirth, p.TeamId, t.Id as TeamId, t.Name, t.SportId FROM Team t "
-					+ "INNER JOIN Player p ON t.Id = p.TeamId WHERE t.SportId = @ID", (player, team) => { return player; }, splitOn: "TeamId", param: new { ID = sportId });
+					+ "INNER JOIN Player p ON t.Id = p.TeamId WHERE t.SportId = @ID", (player, team) => { return player; }, splitOn: "TeamId", param: new { ID = sportId })
+					.AsList();
 			}
 
 			return true;

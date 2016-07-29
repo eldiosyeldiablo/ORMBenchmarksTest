@@ -87,7 +87,8 @@ namespace ORMBenchmarksTest
 				new EntityFramework(),
 				new ADONET(),
 				new ADONetReader(),
-				new DataAccess.Dapper()
+				new DataAccess.Dapper(),
+				new PetaPocoORM()
 			};
 
 			Console.WriteLine("Shufflining the order of ORMs to run");

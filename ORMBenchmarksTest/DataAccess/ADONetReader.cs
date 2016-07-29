@@ -1,4 +1,5 @@
-﻿using ORMBenchmarksTest.DTOs;
+﻿using System.Linq;
+using ORMBenchmarksTest.DTOs;
 using ORMBenchmarksTest.TestData;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,8 @@ namespace ORMBenchmarksTest.DataAccess
 				{
 					command.Parameters.Add(new SqlParameter("@ID", id));
 					var reader = command.ExecuteReader();
-					var item = AutoMapper.Mapper.DynamicMap<List<PlayerDTO>>(reader);
-
+					var item = AutoMapper.Mapper.DynamicMap<List<PlayerDTO>>(reader)
+						.First();
 				}
 			}
 

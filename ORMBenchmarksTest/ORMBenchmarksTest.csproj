@@ -69,6 +69,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
@@ -83,8 +84,10 @@
     <Compile Include="Constants.cs" />
     <Compile Include="DataAccess\ADONET.cs" />
     <Compile Include="DataAccess\ADONetReader.cs" />
+    <Compile Include="DataAccess\PetaPocoORM.cs" />
     <Compile Include="DataAccess\Dapper.cs" />
     <Compile Include="DataAccess\EntityFramework.cs" />
+    <Compile Include="Models\PetaPoco.cs" />
     <Compile Include="TestData\Database.cs" />
     <Compile Include="DataAccess\ITestSignature.cs" />
     <Compile Include="DTOs\PlayerDTO.cs" />

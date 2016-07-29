@@ -21,5 +21,6 @@ namespace ORMBenchmarksTest.TestData
 		ADONetDr,
 		EntityFramework,
 		Dapper,
+		PetaPoco
 	}
 }

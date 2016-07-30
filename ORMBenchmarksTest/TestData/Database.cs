@@ -30,22 +30,61 @@ namespace ORMBenchmarksTest.TestData
 		private static void AddPlayers(List<PlayerDTO> players)
 		{
 			Console.WriteLine($"Persisting {players.Count} players");
-			using (SportContext context = new SportContext())
+			//using (TransactionScope scope = new TransactionScope())
 			{
-				foreach (var player in players)
+				SportContext context = null;
+				try
 				{
-					context.Players.Add(new Player()
+					context = new SportContext();
+					context.Configuration.AutoDetectChangesEnabled = false;
+
+					int count = 0;
+					foreach (var player in players)
 					{
-						FirstName = player.FirstName,
-						LastName = player.LastName,
-						DateOfBirth = player.DateOfBirth,
-						TeamId = player.TeamId,
-						Id = player.Id
-					});
+						count++;
+						var p = new Player()
+						{
+							FirstName = player.FirstName,
+							LastName = player.LastName,
+							DateOfBirth = player.DateOfBirth,
+							TeamId = player.TeamId,
+							Id = player.Id
+						};
+
+						//flush to db after 1000 records
+						context = AddToContext(context, p, count, 1000, true);
+					}
+
+					context.SaveChanges();
+				}
+				finally
+				{
+					if (context != null)
+						context.Dispose();
 				}
 
-				context.SaveChanges();
+				//scope.Complete();
 			}
+		}
+
+		private static SportContext AddToContext(SportContext context, Player entity, int count, int commitCount, bool recreateContext)
+		{
+			context.Set<Player>().Add(entity);
+
+			if (count % commitCount == 0)
+			{
+				Console.WriteLine($"Flushing out {commitCount} players of {count} to database to avoid very large saves");
+				context.SaveChanges();
+				if (recreateContext)
+				{
+					context.Dispose();
+					context = new SportContext();
+					context.Configuration.AutoDetectChangesEnabled = false;
+					context.Configuration.ValidateOnSaveEnabled = false;
+				}
+			}
+
+			return context;
 		}
 
 		private static void AddTeams(List<TeamDTO> teams)

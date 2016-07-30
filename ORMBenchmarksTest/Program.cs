@@ -97,7 +97,8 @@ namespace ORMBenchmarksTest
 			Fisher_Yates_CardDeck_Shuffle(testsORMs);
 			for (int i = 0; i < NumRuns; i++)
 			{
-				foreach(var tester in testsORMs)
+				Console.WriteLine($"\nRunning test simulation number {i}");
+				foreach (var tester in testsORMs)
 				{
 					Console.WriteLine($"Testing {tester.FrameWorkType}");
 					var testResult = RunTests(i, tester.FrameWorkType, tester);
